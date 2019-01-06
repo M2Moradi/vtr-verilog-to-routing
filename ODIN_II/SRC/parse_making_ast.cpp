@@ -80,7 +80,8 @@ short to_view_parse;
 void graphVizOutputPreproc(FILE *yyin);
 ast_node_t *newFunctionAssigning(ast_node_t *expression1, ast_node_t *expression2, int line_number);
 ast_node_t *newHardBlockInstance(char* module_ref_name, ast_node_t *module_named_instance, int line_number);
-
+// by mms
+ast_node_t *findNodeWithChildren (char *id, ast_node_t *parent);
 /*
  * Function implementations
  */
@@ -826,6 +827,77 @@ ast_node_t *newRangeRef(char *id, ast_node_t *expression1, ast_node_t *expressio
 	allocate_children_to_node(new_node, 3, symbol_node, expression1, expression2);
 	/* swap the direction so in form [MSB:LSB] */
 	get_range(new_node);
+
+	return new_node;
+}
+
+// ast_node_t **all_file_items_list;
+
+/*---------------------------------------------------------------------------------------------
+ * (function: findNodeWithChildren) - author:mms
+ *
+ * Recursively searches the tree to find the parent node, in order to find it's length and 
+ * resolve relative indices.
+ *-------------------------------------------------------------------------------------------*/
+
+ast_node_t *findNodeWithChildren (char *id, ast_node_t *parent)
+{
+	printf("Searching for %s...\n", id);
+	if ((strcmp(parent->types.identifier, id) == 0) & (parent->num_children > 0))
+		return parent;
+	for (int i = 0; i < parent->num_children; i++)
+	{
+		ast_node_t *buf = findNodeWithChildren(id, parent->children[i]);
+		if (buf != NULL)
+			return buf;
+	}
+	return NULL;
+}
+
+/*---------------------------------------------------------------------------------------------
+ * (function: newIndexedRef) - author:mms
+ *-------------------------------------------------------------------------------------------*/
+ast_node_t *newIndexedRef(char *id, ast_node_t *expression1, ast_node_t *expression2, int line_number)
+{
+	/* allocate or check if there's a node for this */
+	ast_node_t *symbol_node = newSymbolNode(id, line_number);
+	/* create a node for this array reference */
+	ast_node_t* new_node = create_node_w_type(RANGE_REF, line_number, current_parse_file);
+
+	//printf("\nnew_node: \nunique_count = %d\nfar_tag = %d\nhigh_number = %d\nnum_children = %d\nfile_number = %d\nline_number = %d\nshared_node = %d\nis_read_write = %d\n\n", (int)new_node->unique_count, new_node->far_tag, new_node->high_number, (int)new_node->num_children, new_node->file_number, new_node->line_number, (int)new_node->shared_node, (int)new_node->is_read_write);
+
+	// For now, we assume that lengths are always decimals.
+	
+	if ((expression1->type != NUMBERS) | (expression2->type != NUMBERS))
+	{
+		printf("Invalid range\n");
+	}
+
+	int child_min_index = 0;
+
+	printf("\nnumber = %s; value = %d\n", expression1->types.number.number, (int)expression1->types.number.value);
+	child_min_index = atoi(expression1->types.number.number);
+	int child_max_index = atoi(expression2->types.number.number) + child_min_index - 1;
+
+	printf("\n           min = %d, max = %d\n", child_min_index, child_max_index);
+	printf("\noriginally min = %s, max = %s\n", expression1->types.number.number, expression2->types.number.number);
+
+	sprintf(expression1->types.number.number, "%d", child_min_index);
+	expression1->types.number.value = child_min_index;
+	sprintf(expression2->types.number.number, "%d", child_max_index);
+	expression2->types.number.value = child_max_index;
+
+	printf("\nnumber = %s; value = %d\n", expression1->types.number.number, (int)expression1->types.number.value);
+	printf("\nupdated    min = %s, max = %s\n", expression1->types.number.number, expression2->types.number.number);
+	/* allocate child nodes to this node */
+	allocate_children_to_node(new_node, 3, symbol_node, expression2, expression1);
+
+	//printf("\nnew_node: \nunique_count = %d\nfar_tag = %d\nhigh_number = %d\nnum_children = %d\nfile_number = %d\nline_number = %d\nshared_node = %d\nis_read_write = %d\n\n", (int)new_node->unique_count, new_node->far_tag, new_node->high_number, (int)new_node->num_children, new_node->file_number, new_node->line_number, (int)new_node->shared_node, (int)new_node->is_read_write);
+
+	/* swap the direction so in form [MSB:LSB] */
+	get_range(new_node);
+
+	//printf("\nnew_node: \nunique_count = %d\nfar_tag = %d\nhigh_number = %d\nnum_children = %d\nfile_number = %d\nline_number = %d\nshared_node = %d\nis_read_write = %d\n\n", (int)new_node->unique_count, new_node->far_tag, new_node->high_number, (int)new_node->num_children, new_node->file_number, new_node->line_number, (int)new_node->shared_node, (int)new_node->is_read_write);
 
 	return new_node;
 }

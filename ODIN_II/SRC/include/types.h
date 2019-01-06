@@ -264,6 +264,7 @@ typedef enum
 	LOGICAL_NOR, // No Symbol
 	LOGICAL_XNOR, // No symbol
 	LOGICAL_XOR, // No Symbol
+	INDEXED_PART_SELECT_POS, // +: mms
 	MULTIPLY, // *
 	DIVIDE, // /
 	MODULO, // %
