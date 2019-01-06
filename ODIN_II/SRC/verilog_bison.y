@@ -63,7 +63,7 @@ int yylex(void);
 %token vALWAYS vINITIAL vSPECIFY vAND vASSIGN vBEGIN vCASE vDEFAULT vDEFINE vELSE vEND vENDCASE
 %token vENDMODULE vENDSPECIFY vENDFUNCTION vIF vINOUT vINPUT vMODULE vFUNCTION vNAND vNEGEDGE vNOR vNOT vOR vFOR
 %token vOUTPUT vPARAMETER vPOSEDGE vREG vWIRE vXNOR vXOR vDEFPARAM voANDAND
-%token voINDPARTSEL
+%token voINDPARTSEL_POS voINDPARTSEL_NEG
 %token voOROR voLTE voGTE voPAL voSLEFT voSRIGHT vo ASRIGHT voEQUAL voNOTEQUAL voCASEEQUAL
 %token voCASENOTEQUAL voXNOR voNAND voNOR vWHILE vINTEGER
 %token vNOT_SUPPORT
@@ -512,7 +512,8 @@ primary:
 	| vSYMBOL_ID '[' expression ']'							{$$ = newArrayRef($1, $3, yylineno);}
 	| vSYMBOL_ID '[' expression ']' '[' expression ']'		{$$ = newArrayRef2D($1, $3, $6, yylineno);}
 	| vSYMBOL_ID '[' expression ':' expression ']'			{$$ = newRangeRef($1, $3, $5, yylineno);}
-	| vSYMBOL_ID '[' expression voINDPARTSEL expression ']'		{$$ = newIndexedRef($1, $3, $5, yylineno);}
+	| vSYMBOL_ID '[' expression voINDPARTSEL_POS expression ']'		{$$ = newIndexedRefPos($1, $3, $5, yylineno);}
+	| vSYMBOL_ID '[' expression voINDPARTSEL_NEG expression ']'		{$$ = newIndexedRefNeg($1, $3, $5, yylineno);}
 	| vSYMBOL_ID '[' expression ':' expression ']' '[' expression ':' expression ']'	{$$ = newRangeRef2D($1, $3, $5, $8, $10, yylineno);}
 	| '{' probable_expression_list '}' 						{$$ = $2; ($2)->types.concat.num_bit_strings = -1;}
 	;

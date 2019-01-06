@@ -180,9 +180,9 @@ char* standardize_number(const char* input);
 <INITIAL>"&&&"				{ MP; return vNOT_SUPPORT;}
 	/*<INITIAL>"+:"				{ MP; return vNOT_SUPPORT;}*/
 	/* adding support */
-<INITIAL>"+:"				{ MP; return voINDPARTSEL;}
-<INITIAL>"-:"				{ MP; return vNOT_SUPPORT;}
-
+	/*<INITIAL>"-:"				{ MP; return vNOT_SUPPORT;}*/
+<INITIAL>"+:"				{ MP; return voINDPARTSEL_POS;}
+<INITIAL>"-:"				{ MP; return voINDPARTSEL_NEG;}
 
 	/*	operands	*/
 <INITIAL>`?[a-zA-Z_][a-zA-Z0-9_]*				{ MP; yylval.id_name = vtr::strdup(yytext); return vSYMBOL_ID; }

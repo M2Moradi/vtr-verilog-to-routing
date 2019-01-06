@@ -1,7 +1,5 @@
-module partial_adder (a, b, cin, s, cout);
-input [7:0] a, b;
-input cin;
+module partial_adder (a, s);
+input [7:0] a;
 output [7:0] s;
-output cout;
-assign s = {4'b0000, a[0+:4]};
+assign s = {a[3-:4], a[4+:4]};
 endmodule

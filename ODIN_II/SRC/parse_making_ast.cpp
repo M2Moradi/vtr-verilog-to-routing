@@ -854,10 +854,45 @@ ast_node_t *findNodeWithChildren (char *id, ast_node_t *parent)
 	return NULL;
 }
 
+
 /*---------------------------------------------------------------------------------------------
- * (function: newIndexedRef) - author:mms
+ * (function: newIndexedRefNeg) - author:mms
  *-------------------------------------------------------------------------------------------*/
-ast_node_t *newIndexedRef(char *id, ast_node_t *expression1, ast_node_t *expression2, int line_number)
+ast_node_t *newIndexedRefNeg(char *id, ast_node_t *expression1, ast_node_t *expression2, int line_number)
+{
+	/* allocate or check if there's a node for this */
+	ast_node_t *symbol_node = newSymbolNode(id, line_number);
+	/* create a node for this array reference */
+	ast_node_t* new_node = create_node_w_type(RANGE_REF, line_number, current_parse_file);
+
+	// For now, we assume that lengths are always decimals.
+	
+	if ((expression1->type != NUMBERS) | (expression2->type != NUMBERS))
+	{
+		printf("Invalid range\n");
+	}
+
+	int child_max_index = atoi(expression1->types.number.number);
+	int child_min_index = child_max_index - atoi(expression2->types.number.number) + 1;
+
+	sprintf(expression1->types.number.number, "%d", child_min_index);
+	expression1->types.number.value = child_min_index;
+	sprintf(expression2->types.number.number, "%d", child_max_index);
+	expression2->types.number.value = child_max_index;
+
+	/* allocate child nodes to this node */
+	allocate_children_to_node(new_node, 3, symbol_node, expression2, expression1);
+
+	/* swap the direction so in form [MSB:LSB] */
+	get_range(new_node);
+
+	return new_node;
+}
+
+/*---------------------------------------------------------------------------------------------
+ * (function: newIndexedRefPos) - author:mms
+ *-------------------------------------------------------------------------------------------*/
+ast_node_t *newIndexedRefPos(char *id, ast_node_t *expression1, ast_node_t *expression2, int line_number)
 {
 	/* allocate or check if there's a node for this */
 	ast_node_t *symbol_node = newSymbolNode(id, line_number);
