@@ -1,8 +1,6 @@
 # Verilog to Routing (VTR)
 [![Build Status](https://travis-ci.org/verilog-to-routing/vtr-verilog-to-routing.svg?branch=master)](https://travis-ci.org/verilog-to-routing/vtr-verilog-to-routing) [![Documentation Status](https://readthedocs.org/projects/vtr/badge/?version=latest)](http://docs.verilogtorouting.org/en/latest/?badge=latest)
 
-This is a test!
-
 ## Introduction
 The Verilog-to-Routing (VTR) project is a world-wide collaborative effort to provide a open-source framework for conducting FPGA architecture and CAD research and development.
 The VTR design flow takes as input a Verilog description of a digital circuit, and a description of the target FPGA architecture.
